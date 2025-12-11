@@ -1,0 +1,12 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/ingydotnet/git-subrepo#readme
+;
+[subrepo]
+	remote = https://github.com/mitmedialab/build-doodlebot-storybook-activity-suede
+	branch = release
+	commit = 01121cf706055ec5caf360db795d08fc54e63d37
+	parent = d75740f3a9892f68fd194df939a4bc3f0b56d23e
+	method = merge
+	cmdver = 0.4.9

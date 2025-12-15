@@ -6,7 +6,7 @@
 [subrepo]
 	remote = https://github.com/mitmedialab/build-doodlebot-storybook-activity-suede
 	branch = release
-	commit = 01121cf706055ec5caf360db795d08fc54e63d37
-	parent = d75740f3a9892f68fd194df939a4bc3f0b56d23e
+	commit = d40020bdfdfc6ab510b79ddd12e0185b5180eb59
+	parent = 58e0b41a48f91037641ae90ef6afab67e0862792
 	method = merge
 	cmdver = 0.4.9

@@ -1,140 +1,160 @@
 <script lang="ts" context="module">
   type Context = {
     goToSceneInNextPage: (sceneIndex: number) => void;
-    asset: (src: string) => string;
+    fromBase: (src: string) => string;
+  };
+
+  const isTouchEvent = (event: TouchEvent | MouseEvent): event is TouchEvent =>
+    event.type === "touchstart" ||
+    event.type === "touchmove" ||
+    event.type === "touchend";
+
+  const assetsBasePath = "build-a-doodlebot";
+
+  const getAssets = ({ fromBase }: Pick<Context, "fromBase">) => {
+    const image = (id: string) => fromBase(`${assetsBasePath}/images/${id}`);
+    const video = (id: string) => fromBase(`${assetsBasePath}/videos/${id}`);
+    const sound = (id: string) => fromBase(`${assetsBasePath}/sounds/${id}`);
+
+    const colors = [
+      "board.png",
+      "cam2.png",
+      "mic2.png",
+      "pen.png",
+      "screen2.png",
+      "wheel.png",
+      "speak4.png",
+    ].map(image);
+
+    const colorDictionary = {
+      "#88d0f9": image("colors/DB1_v09-Blue.png"),
+      "#f9c37f": image("colors/DB1_v09-Gold.png"),
+      "#f984b0": image("colors/DB1_v09-Pink.png"),
+      "#a182ff": image("colors/DB1_v09-Grape.png"),
+      "#cf98e5": image("colors/DB1_v09-Lavender.png"),
+      "#92ed8f": image("colors/DB1_v09-Lime.png"),
+    };
+
+    const expressions = [
+      "expressions/DB1_v09-Front-Angry.png",
+      "expressions/DB1_v09-Front-Annoyed.png",
+      "expressions/DB1_v09-Front-Baseline.png",
+      "expressions/DB1_v09-Front-Confused.png",
+      "expressions/DB1_v09-Front-Disgust.png",
+      "expressions/DB1_v09-Front-Love.png",
+      "expressions/DB1_v09-Front-Sad3.png",
+      "expressions/DB1_v09-Front-Surprise.png",
+    ].map(image);
+
+    const game2Colors = [
+      "#88d0f9",
+      "#f9c37f",
+      "#f984b0",
+      "#a182ff",
+      "#cf98e5",
+      "#92ed8f",
+    ];
+
+    const layers = {
+      wheel1: image("layers/BackWheelLayer.png"),
+      cam: image("layers/CameraLayer.png"),
+      wheel2: image("layers/FrontWheelLayer.png"),
+      board: image("layers/MainBoardLayer.png"),
+      microphone: image("layers/MicrophoneLayer.png"),
+      pen: image("layers/PenLayer.png"),
+      screen: image("layers/ScreenLayer.png"),
+      speaker: image("layers/SpeakerLayer.png"),
+    };
+
+    const videos = [
+      "DB_amazing_v02_board.mp4",
+      "DB_amazing_v02_cam.mp4",
+      "DB_amazing_v02_mic.mp4",
+      "DB_amazing_v02_pen.mp4",
+      "DB_amazing_v02_screen.mp4",
+      "DB_amazing_v02_wheels.mp4",
+      "DB_amazing_v02_speaker.mp4",
+      "CompletedDoodleBotDance.mp4",
+    ].map(video);
+
+    const srcDictionary = {
+      [video("DB_amazing_v02_board.mp4")]: "board",
+      [video("DB_amazing_v02_cam.mp4")]: "cam",
+      [video("DB_amazing_v02_mic.mp4")]: "microphone",
+      [video("DB_amazing_v02_pen.mp4")]: "pen",
+      [video("DB_amazing_v02_screen.mp4")]: "screen",
+      [video("DB_amazing_v02_wheels.mp4")]: "wheel",
+      [video("DB_amazing_v02_speaker.mp4")]: "speaker",
+    };
+
+    const sounds = [
+      "board.mp3",
+      "cam.mp3",
+      "mic.mp3",
+      "pen.mp3",
+      "screen.mp3",
+      "wheels.mp3",
+      "speaker.mp3",
+    ].map(sound);
+
+    return {
+      colors,
+      colorDictionary,
+      layers,
+      videos,
+      sounds,
+      expressions,
+      game2Colors,
+      srcDictionary,
+    };
   };
 </script>
 
 <script lang="ts">
-  import { onDestroy, onMount } from "svelte";
+  import { onMount } from "svelte";
 
   export let context: Context;
   import html2canvas from "html2canvas";
 
-  // import board from "./images/board.png";
-  // import cam from "./images/cam2.png";
-  // import mic from "./images/mic2.png";
-  // import pen from "./images/pen.png";
-  // import screen from "./images/screen2.png";
-  // import wheel from "./images/wheel.png";
-  // import speak from "./images/speak4.png";
-
-  const assetsBasePath = "build-a-doodlebot";
-  const image = (id: string) => context.asset(`${assetsBasePath}/images/${id}`);
-  const video = (id: string) => context.asset(`${assetsBasePath}/videos/${id}`);
-
-  const colors = [
-    "board.png",
-    "cam2.png",
-    "mic2.png",
-    "pen.png",
-    "screen2.png",
-    "wheel.png",
-    "speak4.png",
-  ].map(image);
-
-  const coloredRobots = [
-    "colors/DB1_v09-Blue.png",
-    "colors/DB1_v09-Gold.png",
-    "colors/DB1_v09-Pink.png",
-    "colors/DB1_v09-Grape.png",
-    "colors/DB1_v09-Lavender.png",
-    "colors/DB1_v09-Lime.png",
-  ].map(image);
-
-  const colorDictionary = {
-    "#88d0f9": image("colors/DB1_v09-Blue.png"),
-    "#f9c37f": image("colors/DB1_v09-Gold.png"),
-    "#f984b0": image("colors/DB1_v09-Pink.png"),
-    "#a182ff": image("colors/DB1_v09-Grape.png"),
-    "#cf98e5": image("colors/DB1_v09-Lavender.png"),
-    "#92ed8f": image("colors/DB1_v09-Lime.png"),
-  };
-
-  const expressions = [
-    "expressions/DB1_v09-Front-Angry.png",
-    "expressions/DB1_v09-Front-Annoyed.png",
-    "expressions/DB1_v09-Front-Baseline.png",
-    "expressions/DB1_v09-Front-Confused.png",
-    "expressions/DB1_v09-Front-Disgust.png",
-    "expressions/DB1_v09-Front-Love.png",
-    "expressions/DB1_v09-Front-Sad3.png",
-    "expressions/DB1_v09-Front-Surprise.png",
-  ].map(image);
-
-  const game2Colors = [
-    "#88d0f9",
-    "#f9c37f",
-    "#f984b0",
-    "#a182ff",
-    "#cf98e5",
-    "#92ed8f",
-  ];
+  const {
+    colors,
+    colorDictionary,
+    layers,
+    videos,
+    sounds,
+    expressions,
+    game2Colors,
+    srcDictionary,
+  } = getAssets(context);
 
   let selectedRobot = colorDictionary["#88d0f9"];
   let selectedExpression: string | undefined = undefined;
+  let fullContainer: HTMLElement;
 
-  const layers = {
-    wheel1: image("layers/BackWheelLayer.png"),
-    cam: image("layers/CameraLayer.png"),
-    wheel2: image("layers/FrontWheelLayer.png"),
-    board: image("layers/MainBoardLayer.png"),
-    microphone: image("layers/MicrophoneLayer.png"),
-    pen: image("layers/PenLayer.png"),
-    screen: image("layers/ScreenLayer.png"),
-    speaker: image("layers/SpeakerLayer.png"),
-  };
-
-  const videos = [
-    "DB_amazing_v02_board.mp4",
-    "DB_amazing_v02_cam.mp4",
-    "DB_amazing_v02_mic.mp4",
-    "DB_amazing_v02_pen.mp4",
-    "DB_amazing_v02_screen.mp4",
-    "DB_amazing_v02_wheels.mp4",
-    "DB_amazing_v02_speaker.mp4",
-    "CompletedDoodleBotDance.mp4",
-  ].map(video);
-
-  const srcDictionary = {
-    [video("DB_amazing_v02_board.mp4")]: "board",
-    [video("DB_amazing_v02_cam.mp4")]: "cam",
-    [video("DB_amazing_v02_mic.mp4")]: "microphone",
-    [video("DB_amazing_v02_pen.mp4")]: "pen",
-    [video("DB_amazing_v02_screen.mp4")]: "screen",
-    [video("DB_amazing_v02_wheels.mp4")]: "wheel",
-    [video("DB_amazing_v02_speaker.mp4")]: "speaker",
-  };
-
-  const background = image("Background.png");
-
-  const sounds = [
-    "./assets/dobo/board.mp3",
-    "./assets/dobo/cam.mp3",
-    "./assets/dobo/mic.mp3",
-    "./assets/dobo/pen.mp3",
-    "./assets/dobo/screen.mp3",
-    "./assets/dobo/wheels.mp3",
-    "./assets/dobo/speaker.mp3",
-  ];
+  const initialCheckedState = false;
 
   const checkedDictionary = {
-    board: true,
-    cam: true,
-    pen: true,
-    screen: true,
-    wheel1: true,
-    wheel2: true,
-    speaker: true,
+    board: initialCheckedState,
+    cam: initialCheckedState,
+    pen: initialCheckedState,
+    screen: initialCheckedState,
+    wheel1: initialCheckedState,
+    wheel2: initialCheckedState,
+    speaker: initialCheckedState,
   };
+
+  const playCompletdVideoDelayMs = 2000;
+  const showNextModalMessageDurationMs = 5000;
 
   let mode = "game1";
 
   let showExpressionTab = false;
 
+  let overlayCheckedComponents = false;
+
   let audioElements = sounds.map((sound) => new Audio(sound));
 
-  function playSound(index) {
+  function playSound(index: number) {
     // Play the audio corresponding to the video index
     audioElements[index].currentTime = 0; // Reset to start
     audioElements[index].play().catch((error) => {
@@ -144,18 +164,21 @@
   }
 
   let customDragImage;
-  function createCustomDragImage(target) {
+  function createCustomDragImage(target: HTMLElement) {
+    const rect = target.getBoundingClientRect();
     customDragImage = target.cloneNode(true);
     customDragImage.style.position = "absolute";
+    customDragImage.style.left = rect.left + "px";
+    customDragImage.style.top = rect.top + "px";
     customDragImage.id = "custom-" + target.id;
     customDragImage.style.pointerEvents = "none"; // Avoid interference with mouse/touch events
     customDragImage.style.zIndex = "1000";
-    document.body.appendChild(customDragImage);
+    fullContainer.appendChild(customDragImage);
     return customDragImage;
   }
 
-  function handleTouchStart(event) {
-    const target = event.target;
+  function handleTouchStart(event: TouchEvent | MouseEvent) {
+    const target = event.target as HTMLElement;
     event.preventDefault();
     if (target.classList.contains("colored-div") && mode == "game1") {
       console.log("CREATING CUSTOM DRAG IMAGE");
@@ -174,9 +197,9 @@
         passive: false,
       });
 
-      function handleTouchMove(event) {
+      function handleTouchMove(event: TouchEvent | MouseEvent) {
         event.preventDefault();
-        if (event.type == "touchmove") {
+        if (isTouchEvent(event)) {
           const touch = event.touches[0];
           const offsetX = customDragImage.offsetWidth / 2;
           const offsetY = customDragImage.offsetHeight / 2;
@@ -192,7 +215,7 @@
         }
       }
 
-      function handleTouchEnd(event) {
+      function handleTouchEnd(event: TouchEvent | MouseEvent) {
         document.removeEventListener("touchmove", handleTouchMove);
         document.removeEventListener("touchend", handleTouchEnd);
         document.removeEventListener("mousemove", handleTouchMove);
@@ -228,14 +251,11 @@
 
           if (videoElement instanceof HTMLVideoElement) {
             const coloredDivs = document.querySelectorAll(".colored-div");
-            const layers = document.querySelectorAll(".image-layer");
 
             function playListener1() {
+              overlayCheckedComponents = false;
               coloredDivs.forEach((div) => {
                 div.classList.add("grayscale");
-              });
-              layers.forEach((div) => {
-                div.classList.add("hide");
               });
 
               setTimeout(() => {
@@ -246,6 +266,9 @@
             }
             videoElement.addEventListener("play", playListener1);
 
+            // skip to 1.25 second
+            videoElement.currentTime = 1.25;
+
             videoElement.play().catch((error) => {
               console.error("Error attempting to play video:", error);
             });
@@ -254,9 +277,8 @@
                 div.classList.remove("grayscale");
               });
 
-              layers.forEach((div) => {
-                div.classList.remove("hide");
-              });
+              overlayCheckedComponents = true;
+
               document.addEventListener("touchstart", handleTouchStart, {
                 passive: false,
               });
@@ -267,9 +289,8 @@
               let checkmarkIndex = "checkmark-" + id;
               document.getElementById(checkmarkIndex).style.opacity = "1";
 
-              const url = new URL(videoElement.src);
-              const path = "./" + url.pathname.slice(1); // e.g. "./videos/DB_amazing_v02_board.mp4"
-              const checkedId = srcDictionary[path];
+              const url = new URL(videoElement.querySelector("source").src);
+              const checkedId = srcDictionary[url.pathname];
 
               console.log("CHECKED ID:", checkedId);
               if (checkedId == "wheel") {
@@ -294,8 +315,8 @@
                   console.log("END VIDEO:", endVideo);
                   currentVideoIndex = 7;
                   endVideo.classList.add("visible");
-                  playEndVideo(endVideo);
-                }, 1000);
+                  playCompletedVideo(endVideo);
+                }, playCompletdVideoDelayMs);
               }
             });
           }
@@ -306,57 +327,60 @@
     }
   }
 
-  function playEndVideo(videoElement) {
+  function playCompletedVideo(videoElement) {
     const coloredDivs = document.querySelectorAll(".colored-div");
-    const layers = document.querySelectorAll(".image-layer");
-    coloredDivs.forEach((div) => {
-      div.classList.add("grayscale");
-    });
-    layers.forEach((div) => {
-      div.classList.add("hide");
-    });
 
-    function playListener2() {
+    function playListener() {
       console.log("PLAYING VIDOE");
       coloredDivs.forEach((div) => {
         div.classList.add("grayscale");
       });
-      layers.forEach((div) => {
-        div.classList.add("hide");
-      });
+
+      overlayCheckedComponents = false;
 
       document.removeEventListener("touchstart", handleTouchStart);
       document.removeEventListener("mousedown", handleTouchStart);
     }
-    videoElement.addEventListener("play", playListener2);
+    videoElement.addEventListener("play", playListener);
 
     videoElement.play().catch((error) => {
       console.error("Error attempting to play video:", error);
     });
-    videoElement.addEventListener("ended", () => {
-      coloredDivs.forEach((div) => {
-        div.classList.remove("grayscale");
-      });
 
-      layers.forEach((div) => {
-        div.classList.remove("hide");
-      });
-      document.addEventListener("touchstart", handleTouchStart, {
-        passive: false,
-      });
-      document.addEventListener("mousedown", handleTouchStart, {
-        passive: false,
-      });
-      videoElement.removeEventListener("play", playListener2);
-      const nextModal = document.getElementById("next-modal");
-      nextModal.style.display = "flex";
-      setTimeout(() => {
-        nextModal.style.display = "none";
-        enterGame2();
-      }, 5000);
+    let hasTriggered = false;
+    const handleTimeUpdate = () => {
+      if (
+        !hasTriggered &&
+        videoElement.currentTime >= videoElement.duration - 3
+      ) {
+        hasTriggered = true;
+        videoElement.removeEventListener("timeupdate", handleTimeUpdate);
 
-      console.log("entering game 2");
-    });
+        coloredDivs.forEach((div) => {
+          div.classList.remove("grayscale");
+        });
+
+        overlayCheckedComponents = false;
+
+        document.addEventListener("touchstart", handleTouchStart, {
+          passive: false,
+        });
+        document.addEventListener("mousedown", handleTouchStart, {
+          passive: false,
+        });
+        videoElement.removeEventListener("play", playListener);
+        const nextModal = document.getElementById("next-modal");
+        nextModal.style.display = "flex";
+        setTimeout(() => {
+          nextModal.style.display = "none";
+          enterGame2();
+        }, showNextModalMessageDurationMs);
+
+        console.log("entering game 2");
+      }
+    };
+
+    videoElement.addEventListener("timeupdate", handleTimeUpdate);
   }
 
   function showRobot(color) {
@@ -458,6 +482,7 @@
     const game1Divs = document.querySelectorAll(".game1");
     game1Divs.forEach((div) => {
       if (!(div instanceof HTMLElement)) return;
+      div.style.transition = "opacity 0.5s";
       div.style.opacity = "0";
       setTimeout(() => {
         div.style.display = "none";
@@ -490,7 +515,7 @@
   });
 </script>
 
-<div class="full-container">
+<div class="full-container" bind:this={fullContainer}>
   <div class="modal" id="next-modal" style="display:none">
     <div class="modal-content">
       <p><strong style="width:100%">Nice job!</strong></p>
@@ -581,10 +606,11 @@
     >
       Finish!
     </button>
+
     {#each videos as videoSrc, index}
       <video
         id="video-{index}"
-        style="position: absolute; z-index:0"
+        style="position: absolute; z-index:0;"
         class="game1"
         muted
         class:visible={index === currentVideoIndex}
@@ -595,24 +621,19 @@
       </video>
     {/each}
 
-    {#each Object.entries(layers) as [id, imageSrc], index}
-      {#if checkedDictionary[id]}
-        <img
-          src={imageSrc}
-          alt={id}
-          class="image-layer game1"
-          style="position: absolute; z-index: 10; width: 100%"
-          id={"layer-" + index}
-        />
-      {/if}
-    {/each}
-
-    <!-- <img
-          src={background}
-          id="background"
-          alt="Background"
-          width="100%"
-      /> -->
+    {#if overlayCheckedComponents}
+      {#each Object.entries(layers) as [id, imageSrc], index}
+        {#if checkedDictionary[id]}
+          <img
+            src={imageSrc}
+            alt={id}
+            class="image-layer game1"
+            style="position: absolute; z-index: 10;"
+            id={"layer-" + index}
+          />
+        {/if}
+      {/each}
+    {/if}
 
     {#each sounds as soundSrc, index}
       <audio src={soundSrc} id="audio-{index}"></audio>
@@ -627,7 +648,7 @@
         <div>
           <img
             class="robot-display"
-            style="width: 100%; position: absolute; top: 50px; left: 0px;"
+            style="width: 100%; position: absolute; bottom: 0px; left: 0px;"
             src={selectedExpression}
             alt="Selected Robot"
           />
@@ -650,8 +671,8 @@
   .full-container {
     background-color: #dbdbdb;
     position: relative;
-    height: 100vh;
-    width: 100vw;
+    height: 100%;
+    width: 100%;
     display: flex;
     overflow: hidden;
   }
@@ -735,9 +756,17 @@
   }
 
   .image-layer {
-    transition:
-      opacity 0.5s ease,
-      transform 0.5s ease;
+    animation: fadeIn 2s ease forwards;
+    transition: opacity 2s;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 0.5;
+    }
   }
 
   .checkmark {
@@ -762,10 +791,6 @@
     border-radius: 8px; /* Optional: rounded corners */
   }
 
-  :global(.hide) {
-    opacity: 0;
-  }
-
   .robot-display {
     position: absolute;
     top: 150px;
@@ -774,7 +799,8 @@
     transition: opacity 1s; /* Smooth transition for visibility change */
   }
 
-  video {
+  video,
+  .image-layer {
     position: absolute;
     top: 0;
     left: 0;

@@ -1,6 +1,6 @@
 # Build-doodlebot-storybook-activity-suede
 
-This repo is a [suede dependency](https://github.com/pmalacho-mit/suede). 
+This repo is a [suede dependency](https://github.com/pmalacho-mit/suede).
 
 To see the installable source code, please checkout the [release branch](https://github.com/mitmedialab/build-doodlebot-storybook-activity-suede/tree/release).
 
@@ -21,3 +21,10 @@ bash <(curl https://raw.githubusercontent.com/pmalacho-mit/suede/refs/heads/main
 
 </details>
 
+### Refactor ideas
+
+- make each app state a different component (or [snippet](https://svelte.dev/docs/svelte/snippet)!!!)
+  - enables testing pieces in isolation and greatly simplifies complexity
+- less magic numbers
+- (done) use relative position & sizing to ensure that overlays work as expected
+- (done) add types!

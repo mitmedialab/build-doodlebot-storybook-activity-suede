@@ -8,7 +8,7 @@
       goToSceneInNextPage: (index) => {
         console.log("Go to scene in next page:", index);
       },
-      fromBase: (src: string) => `/${src}`,
+      fromBase: (src: string) => `./${src}`,
     }}
   />
 </center>

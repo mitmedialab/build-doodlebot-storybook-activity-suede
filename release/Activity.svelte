@@ -290,9 +290,13 @@
               document.getElementById(checkmarkIndex).style.opacity = "1";
 
               const url = new URL(videoElement.querySelector("source").src);
-              const checkedId = srcDictionary[url.pathname];
+              const name = url.pathname.split("/").pop();
+              const srcKey = Object.keys(srcDictionary).find((key) =>
+                key.endsWith(name)
+              );
+              const checkedId = srcDictionary[srcKey];
 
-              console.log("CHECKED ID:", checkedId);
+              console.log("CHECKED ID:", checkedId, url.pathname);
               if (checkedId == "wheel") {
                 checkedDictionary["wheel1"] = true;
                 checkedDictionary["wheel2"] = true;

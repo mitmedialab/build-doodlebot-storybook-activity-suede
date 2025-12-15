@@ -28,3 +28,4 @@ bash <(curl https://raw.githubusercontent.com/pmalacho-mit/suede/refs/heads/main
 - less magic numbers
 - (done) use relative position & sizing to ensure that overlays work as expected
 - (done) add types!
+- looking items up via `img.src` or `video.src` is very, very fragile (much better to encapsulate all of the logic so that you can keep track of references)

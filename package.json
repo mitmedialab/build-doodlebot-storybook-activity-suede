@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "link:assets": "./release/assets/link.sh ./public/",
-    "build": "npm run link:assets && vite build",
+    "build": "npm run link:assets && vite build --base=./",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.app.json && tsc -p tsconfig.node.json"
   },
